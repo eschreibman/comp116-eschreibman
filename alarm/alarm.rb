@@ -46,14 +46,23 @@ def read_live
 			end
 
 			#Credit card leak 
-			
+			#{incident_number}. ALERT: #{incident} is detected from #{source IP address} (#{protocol}) (#{payload})!
 		end
 	end			
 end
 
 def read_log (file)
-	puts "read in file"
-
+	line_num=0
+	text = File.open(file).read
+	#text.gsub!(/\r\n?/, "\n")
+	text.each_line do |line|
+		if line =~ /Nmap(.*)/
+			match = line.match(/^(.*?)(?=-)/)
+			ip = match.to_s
+			puts "ALERT: Nmap scan is detected from " + ip
+		end
+	end
+#{incident_number}. ALERT: #{incident} is detected from #{source IP address} (#{protocol}) (#{payload})!
 end
 
 
@@ -70,18 +79,7 @@ if options[:read] == nil
 	read_live
 	elsif
 		read_log options[:read]
-	else
-		puts "Unknown flag"
 	end
-
-
-#puts "Dest IP => " + pkt.ip_daddr
-	#If an incident is detected, alert must be displayed in the format:
-	#{incident_number}. ALERT: #{incident} is detected from #{source IP address} (#{protocol}) (#{payload})!
-#Examples:
-#ALERT: NULL scan is detected from 192.168.1.3 (UDP) (binary data)!
-#ALERT: Credit card leaked in the clear from 192.168.1.7 (HTTP) (binary data)!
-#Alert message can be displayed multiple times for a source IP address (e.g., from an XMAS scan).
 
 
 
